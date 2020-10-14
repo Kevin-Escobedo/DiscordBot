@@ -1,6 +1,8 @@
 import discord
 import random
 import wikipedia
+import secret #File that contains bot's token
+
 class Anton(discord.Client):
     async def on_ready(self):
         print("ONLINE")
@@ -29,7 +31,7 @@ class Anton(discord.Client):
        			await message.channel.send("Sorry, it seems like I can't find anything about your desired subject.")
 if __name__ == "__main__":
     client = Anton()
-    token = ""
+    token = secret.token
     client.run(token)
 
 
