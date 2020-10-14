@@ -1,6 +1,8 @@
 import discord
 import random
-import wikipedia
+import wiki
+import secret #File that contains bot's token
+
 class Anton(discord.Client):
     async def on_ready(self):
         print("ONLINE")
@@ -9,27 +11,25 @@ class Anton(discord.Client):
         '''Handles message input'''
         if message.content.lower() == "ping":
             await message.channel.send("Pong")
-#coinflip
+
         if message.content.lower() == "!coin":
-        	random_int = random.randint(1,2)
-        	side = "Heads!"
-        	if random_int == 2:
-        		side = "Tails!"
-        	await message.channel.send(side)
-       	if "!wiki " in message.content.lower():
-       		articles = wikipedia.search(message.content.lower(), results=2)
-       		print(articles)
-       		if len(articles) != 0:
-       			try:
-       				summary = wikipedia.summary(articles[1],sentences=2)
-       			except:
-       				await message.channel.send('Sorry, there was an error getting info about "' + articles[1]+'"')
-       			await message.channel.send(summary)
-       		else:
-       			await message.channel.send("Sorry, it seems like I can't find anything about your desired subject.")
+            await message.channel.send(self.coinFlip())
+
+       	if message.content.split()[0] == "!wiki":
+            result = wiki.search(message.content.split()[1].lower())
+            await message.channel.send(result)
+
+    def coinFlip(self) -> str:
+        '''Flips a coin'''
+        heads = random.randint(0, 1)
+
+        if heads:
+            return "Heads!"
+
+        else:
+            return "Tails!"
+
 if __name__ == "__main__":
     client = Anton()
-    token = ""
+    token = secret.token
     client.run(token)
-
-
