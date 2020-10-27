@@ -29,3 +29,12 @@ def weather(location = ""):
 	except:
 		return "there was a problem getting weather data for " + location + "!"
 
+def image(theme = ""):
+	headers = {
+    'x-rapidapi-host': "bing-image-search1.p.rapidapi.com",
+    'x-rapidapi-key': "7ba2b448famsh1a9b782f4bd7ec3p12da67jsn9fcff09ab2cf"
+    }
+	url = "https://rapidapi.p.rapidapi.com/images/trending"
+	data = requests.request("GET", url, headers=headers)
+
+	return data
