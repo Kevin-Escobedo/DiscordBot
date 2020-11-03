@@ -5,66 +5,65 @@ import secret #File that contains bot's token
 import api_commands 
 import time
 from discord.ext import commands
-class Anton(discord.Client):
 
-	client = commands.Bot(command_prefix = "!")
-	@client.command(name="kick", pass_context = True)
-	#@commands.has_premissions(kick_members = True)
-	async def kick(context, member : discord.Member, reason = ""):
-		await member.kick(reason = reason)
-		await context.send("User " + member.display_name + " has been kicked.")
-	async def on_ready(self):
-		print("ONLINE")
+#create client
+client  = commands.Bot(command_prefix = "!")
 
-	async def on_message(self, message):
-#Ping Pong
-		if message.content.lower() == "ping":
-			await message.channel.send("Pong")
+##################################################
+
+@client.event
+async def on_ready():
+	print("ONLINE")
+
+##################################################
+
+#ping pong
+@client.command()
+async def ping(ctx):
+	await ctx.send("Pong")
+
 #flips a coin
-		if message.content.lower() == "!coin":
-			await message.channel.send(self.coinFlip())
+@client.command()
+async def coin(ctx):
+	heads = random.randint(0, 1)
+	if heads:
+		await ctx.send("Heads!")
+	else:
+		await ctx.send("Tails!") 
+
+##################################################
+
 #gets wiki article		
-		if message.content.split(" ",1)[0] == "!wiki":
-			result = wiki.search(message.content.split(" ",1)[1].lower())
-			await message.channel.send(result)
+@client.command(name = "wiki")
+async def _wiki(ctx, arg):
+	result = wiki.search(arg)
+	await ctx.send(result)
+
+		
 #gets a joke
-		if "!joke" in message.content:
-			if len(message.content.split(" ",1)) > 1:
-				joke_list = api_commands.joke(message.content.split(" ",1)[1])
-			else:
-				joke_list = api_commands.joke()
-			if len(joke_list) > 1:	
-				await message.channel.send(joke_list[0])
-				time.sleep(1)
-				await message.channel.send("...")
-				time.sleep(1)
-				await message.channel.send(joke_list[1])
-			else:
-				await message.channel.send(joke_list[0])
-#gets image
-		if "!image" in message.content:
-			result = api_commands.image()
-			await message.channel.send(result)
-#gets weather
-		if "!weather" in  message.content:
-			location = message.content.split(" ",1)[1]
-			weather_data = api_commands.weather(location)
-			await message.channel.send(weather_data)
-		# if "!kick" in message.content:
-		# 	member_managment.kick()
-	
+@client.command()
+async def joke(ctx, arg=""):
+	if arg != "":
+		joke_list = api_commands.joke(arg)
+	else:
+		joke_list = api_commands.joke()
 
-	def coinFlip(self) -> str:
-		heads = random.randint(0, 1)
+##################################################
 
-		if heads:
-			return "Heads!"
+@client.command()
+async def kick(ctx, member: discord.Member, *, reason = "reason unknown"):
+    await member.kick()
+    await ctx.send("User @"+ member.display_name + " was kicked for " + reason)
 
-		else:     return "Tails!"
+#####BAN/UNBAN#####
+@client.command()
+async def ban(ctx, member: discord.Member, reason = "reason unknown"):
+    await member.ban()
+    await ctx.send("User @"+ member.display_name + " was banned for "+ reason)
 
-if __name__ == "__main__":
-    client = Anton()
-    token = secret.token
-    client.run(token)
+##################################################
+
+#run bot
+client.run(secret.token)
 
  
